@@ -1,0 +1,18 @@
+---
+shared:
+  image: node:12
+  environment:
+    SD_TEMPLATE_PATH: ./template.yaml
+jobs:
+  validate_template:
+    requires: [~pr, ~commit]
+    steps:
+      - install_prerequisites: npm install -g screwdriver-template-main
+      - validate_template: template-validate
+
+  publish_template:
+    requires: [validate_template]
+    steps:
+      - install_prerequisites: npm install -g screwdriver-template-main
+      - publish: template-publish
+      - autotag: template-tag --name sd/dind --tag latest
