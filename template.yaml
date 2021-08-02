@@ -26,7 +26,8 @@ config:
         docker images
     - publish: |
         docker push $DOCKER_REPO:latest 
-        docker push $DOCKER_REPO:$DOCKER_TAG     
+        docker push $DOCKER_REPO:$DOCKER_TAG   
+    - save-tag-to-meta: meta set docker_tag $DOCKER_TAG && meta get docker_tag
   secrets:
     - DOCKER_REGISTRY_TOKEN
     - DOCKER_REGISTRY_USER
