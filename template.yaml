@@ -15,7 +15,7 @@ config:
         apk add git
         git clone https://github.com/screwdriver-cd/toolbox.git ci
         ./ci/git-latest.sh
-      docker login --username $DOCKER_REGISTRY_USER --password $DOCKER_REGISTRY_TOKEN
+        docker login --username $DOCKER_REGISTRY_USER --password $DOCKER_REGISTRY_TOKEN
     - build: | 
         DOCKER_TAG=`cat VERSION`
         docker build -t $DOCKER_REPO:latest .
