@@ -1,7 +1,7 @@
 # dind-template
 Template for Docker In Docker (DIND)
 
-Screwdriver Support DIND when using `executor-k8s` as build executor. 
+Screwdriver supports DIND when using `executor-k8s` as build executor. 
 
 *Cluster admin must enable [`DOCKER_FEATURE_ENABLED`](https://docs.screwdriver.cd/cluster-management/configure-api#executor-plugin) for executor-k8s configuration*
 
@@ -18,6 +18,8 @@ Set environment variable `DOCKER_REPO` to specify your Dockerhub repository deta
 Your pipeline must configure secrets `DOCKER_REGISTRY_USER` & `DOCKER_REGISTRY_TOKEN` to authorize a user who has permission to push to the `DOCKER_REPO` used.
 
 ## Example
+
+Screwdriver [Pipeline](https://cd.screwdriver.cd/pipelines/1/events)
 
 ```
 docker-publish:
