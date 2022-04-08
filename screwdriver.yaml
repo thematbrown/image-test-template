@@ -1,6 +1,6 @@
 ---
 shared:
-  image: node:12
+  image: node:16
   environment:
     SD_TEMPLATE_PATH: ./template.yaml
 jobs:

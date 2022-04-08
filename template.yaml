@@ -1,32 +1,69 @@
 name: sd/dind
-version: '1.0.0'
-description: Template for building Docker containers using DIND
-maintainer: jithin1987@gmail.com
+version: '2.0.0'
+description: Template for building Docker containers using DinD
+maintainer: screwdriver-oss@yahooinc.com
 config:
   image: docker:dind
   annotations:
     screwdriver.cd/cpu: MICRO
     screwdriver.cd/ram: LOW
     screwdriver.cd/dockerEnabled: true
-    screwdriver.cd/dockerCpu: LOW
+    screwdriver.cd/dockerCpu: MICRO
     screwdriver.cd/dockerRam: LOW
   environment:
     DOCKER_REPO: "CHANGE ME"
+    DOCKER_MULTI_PLATFORM_BUILDS_ENABLED: 0
+    DOCKER_TARGET_PLATFORMS: linux/amd64,linux/arm64
+    DOCKERFILE_PATH: '.'
   steps:
-    - init: |
-        apk add git
+    - setup: |
+        apk add git curl coreutils
         git clone https://github.com/screwdriver-cd/toolbox.git ci
         ./ci/git-latest.sh
+
+        if [[ $DOCKER_MULTI_PLATFORM_BUILDS_ENABLED -eq 1 ]]; then
+          echo "Setting up buildx..."
+          mkdir -p /usr/local/lib/docker/cli-plugins/
+          curl -s -L https://github.com/docker/buildx/releases/download/v0.8.2/buildx-v0.8.2.linux-amd64 -o /usr/local/lib/docker/cli-plugins/docker-buildx
+          chmod a+x /usr/local/lib/docker/cli-plugins/docker-buildx
+          docker info
+          docker version
+          docker buildx version
+          docker buildx install
+
+          echo "Setting up docker context..."
+          if [[ -n "$DOCKER_HOST" ]]; then
+            unset DOCKER_HOST
+          fi
+          docker_tls_dir=${DOCKER_CERT_PATH:-/certs/client}
+          docker context create sd-context --docker "host=tcp://localhost:2376,ca=${docker_tls_dir}/ca.pem,cert=${docker_tls_dir}/cert.pem,key=${docker_tls_dir}/key.pem"
+          docker context use sd-context
+
+          echo "Listing docker contexts..."
+          docker context list
+
+          docker buildx create --name sd-builder --driver docker-container --platform $DOCKER_TARGET_PLATFORMS --use
+          docker buildx inspect --bootstrap
+
+          echo "Listing docker buildx builders..."
+          docker buildx ls
+        fi
+    - build-push: |
         docker login --username $DOCKER_REGISTRY_USER --password $DOCKER_REGISTRY_TOKEN
-    - build: | 
         DOCKER_TAG=`cat VERSION`
-        docker build -t $DOCKER_REPO:latest .
-        docker tag $DOCKER_REPO:latest $DOCKER_REPO:$DOCKER_TAG
+
+        if [[ $DOCKER_MULTI_PLATFORM_BUILDS_ENABLED -eq 1 ]]; then
+          docker buildx build --push --platform $DOCKER_TARGET_PLATFORMS -t $DOCKER_REPO:latest $DOCKERFILE_PATH
+          docker buildx build --push --platform $DOCKER_TARGET_PLATFORMS -t $DOCKER_REPO:$DOCKER_TAG $DOCKERFILE_PATH
+        else
+          docker build -t $DOCKER_REPO:latest $DOCKERFILE_PATH
+          docker tag $DOCKER_REPO:latest $DOCKER_REPO:$DOCKER_TAG
+          docker push $DOCKER_REPO:latest
+          docker push $DOCKER_REPO:$DOCKER_TAG
+        fi
     - verify: |
-        docker images
-    - publish: |
-        docker push $DOCKER_REPO:latest 
-        docker push $DOCKER_REPO:$DOCKER_TAG   
+        docker manifest inspect $DOCKER_REPO:latest
+        docker manifest inspect $DOCKER_REPO:$DOCKER_TAG
     - save-tag-to-meta: meta set docker_tag $DOCKER_TAG && meta get docker_tag
   secrets:
     - DOCKER_REGISTRY_TOKEN
