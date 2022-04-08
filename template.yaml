@@ -8,7 +8,7 @@ config:
     screwdriver.cd/cpu: MICRO
     screwdriver.cd/ram: LOW
     screwdriver.cd/dockerEnabled: true
-    screwdriver.cd/dockerCpu: MICRO
+    screwdriver.cd/dockerCpu: LOW
     screwdriver.cd/dockerRam: LOW
   environment:
     DOCKER_REPO: "CHANGE ME"
