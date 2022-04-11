@@ -30,6 +30,9 @@ config:
           docker version
           docker buildx version
           docker buildx install
+          echo "Setting up QEMU binaries registration..."
+          echo "Warning: syscall through emulation will be slow on non-native arch, please expect longer build time"
+          docker run --privileged --rm tonistiigi/binfmt --install all
 
           echo "Setting up docker context..."
           if [[ -n "$DOCKER_HOST" ]]; then
