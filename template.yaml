@@ -58,8 +58,8 @@ config:
         DOCKER_TAG=`cat VERSION`
 
         if [[ $DOCKER_MULTI_PLATFORM_BUILDS_ENABLED -eq 1 ]]; then
-          docker buildx build --push --platform $DOCKER_TARGET_PLATFORMS --cache-from $DOCKER_REPO:latest --build-arg BUILDKIT_INLINE_CACHE=1 -t $DOCKER_REPO:latest -f $DOCKERFILE_NAME $DOCKERFILE_PATH
-          docker buildx build --push --platform $DOCKER_TARGET_PLATFORMS --cache-from $DOCKER_REPO:latest --build-arg BUILDKIT_INLINE_CACHE=1 -t $DOCKER_REPO:$DOCKER_TAG -f $DOCKERFILE_NAME $DOCKERFILE_PATH
+          docker buildx build --push --progress plain --platform $DOCKER_TARGET_PLATFORMS --cache-from $DOCKER_REPO:latest --build-arg BUILDKIT_INLINE_CACHE=1 -t $DOCKER_REPO:latest -f $DOCKERFILE_NAME $DOCKERFILE_PATH
+          docker buildx build --push --progress plain --platform $DOCKER_TARGET_PLATFORMS --cache-from $DOCKER_REPO:latest --build-arg BUILDKIT_INLINE_CACHE=1 -t $DOCKER_REPO:$DOCKER_TAG -f $DOCKERFILE_NAME $DOCKERFILE_PATH
         else
           docker build -t $DOCKER_REPO:latest -f $DOCKERFILE_NAME $DOCKERFILE_PATH
           docker tag $DOCKER_REPO:latest $DOCKER_REPO:$DOCKER_TAG
