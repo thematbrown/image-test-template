@@ -17,9 +17,9 @@ config:
     DOCKERFILE_PATH: '.'
     DOCKERFILE_NAME: Dockerfile
     DOCKER_BUILD_EXTRA_FLAGS: '--no-cache'
-    DOCKER_REGISTRY_USER
-    DOCKER_REGISTRY_TOKEN
-  steps:
+    DOCKER_REGISTRY_USER: DOCKER_REGISTRY_USER
+    DOCKER_REGISTRY_TOKEN: DOCKER_REGISTRY_TOKEN
+  steps: 
     - setup: |
         apk add git curl coreutils
         git clone https://github.com/screwdriver-cd/toolbox.git ci
