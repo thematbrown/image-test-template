@@ -11,12 +11,14 @@ config:
     screwdriver.cd/dockerCpu: LOW
     screwdriver.cd/dockerRam: LOW
   environment:
-    DOCKER_REPO: "CHANGE ME"
+    DOCKER_REPO: mjb513/pipeline-test
     DOCKER_MULTI_PLATFORM_BUILDS_ENABLED: 0
     DOCKER_TARGET_PLATFORMS: linux/amd64,linux/arm64
     DOCKERFILE_PATH: '.'
     DOCKERFILE_NAME: Dockerfile
     DOCKER_BUILD_EXTRA_FLAGS: '--no-cache'
+    # DOCKER_REGISTRY_USER
+    # DOCKER_REGISTRY_TOKEN
   steps:
     - setup: |
         apk add git curl coreutils
