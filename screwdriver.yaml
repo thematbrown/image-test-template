@@ -9,6 +9,8 @@ jobs:
     steps:
       - install_prerequisites: npm install -g screwdriver-template-main
       - validate_template: template-validate
+    environment:
+      SD_TEMPLATE_PATH: ./template.yaml
 
   publish_template:
     requires: [validate_template]
@@ -16,3 +18,5 @@ jobs:
       - install_prerequisites: npm install -g screwdriver-template-main
       - publish: template-publish
       - autotag: template-tag --name sd/dind --tag latest
+    environment:
+      SD_TEMPLATE_PATH: ./template.yaml
